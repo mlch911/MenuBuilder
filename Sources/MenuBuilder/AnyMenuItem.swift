@@ -24,11 +24,46 @@ extension AnyMenuItem {
     ///     }
     /// ```
     public func onSelect(_ handler: @escaping () -> ()) -> Self {
+        set(\.representedObject, to: handler)
+            .onSelect(target: MenuInvoker.shared, action: #selector(MenuInvoker.run(_:)))
+    }
+
+    /// Set the target and action of the menu item
+    ///
+    /// ## Example
+    /// ```swift
+    /// MenuItem("Show Tag")
+    ///     .tag(42)
+    ///     .onSelect(target: self, action: #selector(printSenderTag(_:)))
+    /// ```
+    public func onSelect(target: AnyObject, action: Selector) -> Self {
         apply {
-            $0.representedObject = handler
-            $0.target = MenuInvoker.shared
-            $0.action = #selector(MenuInvoker.run(_:))
+            $0.target = target
+            $0.action = action
         }
+    }
+
+    /// Set the action of the menu item
+    ///
+    /// ## Example
+    /// ```swift
+    /// MenuItem("Show About Panel")
+    ///     .action(#selector(orderFrontStandardAboutPanel:))
+    /// ```
+    public func action(_ action: Selector) -> Self {
+        set(\.action, to: action)
+    }
+
+    /// Set the tag of the menu item
+    ///
+    /// ## Example
+    /// ```swift
+    /// MenuItem("Find…")
+    ///     .action(#selector(NSTextView.performFindPanelAction(_:)))
+    ///     .tag(Int(NSFindPanelAction.showFindPanel.rawValue))
+    /// ```
+    public func tag(_ tag: Int) -> Self {
+        set(\.tag, to: tag)
     }
 
     /// Sets the keyboard shortcut/key equivalent.
